@@ -1,0 +1,3 @@
+[submodule "cinch-plugins"]
+	path = cinch-plugins
+	url = git://github.com/Quintus/cinch-plugins.git
