@@ -10,7 +10,12 @@ DIR = File.dirname(File.expand_path(__FILE__))
 
 cinch = Cinch::Bot.new do
   configure do
-    config.server = "chat.freenode.net"
+    config.server     = "chat.freenode.net"
+    config.port       = 6697
+    config.ssl.use    = true
+    config.ssl.verify = false
+
+    config.channels = ["#secretmaryo"]
     config.nick   = "furbot"
     config.user   = "furbot"
     config.realname = "Furball Bot Left"
@@ -23,6 +28,12 @@ cinch = Cinch::Bot.new do
     :port => 46664,
     :logfile => "#{DIR}/tmp/httpserver.log"
   }
+
+   config.plugins.options[Cinch::LogPlus] = {
+     :plainlogdir => "#{DIR}/logs/plainlogs",
+     :htmllogdir  => "#{DIR}/logs/htmllogs",
+     :timelogformat => "%H:%M"
+   }
 
   config.plugins.plugins = [Cinch::Echo,
                             Cinch::HttpServer,
