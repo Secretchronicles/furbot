@@ -2,9 +2,10 @@
 # -*- mode: ruby; coding: utf-8 -*-
 
 require "cinch"
-require_relative "cinch_plugins/plugins/github_commits"
-require_relative "cinch_plugins/plugins/logplus"
-require_relative "cinch_plugins/plugins/echo"
+require_relative "cinch-plugins/plugins/http_server"
+require_relative "cinch-plugins/plugins/github_commits"
+require_relative "cinch-plugins/plugins/logplus"
+require_relative "cinch-plugins/plugins/echo"
 
 DIR = File.dirname(File.expand_path(__FILE__))
 
@@ -23,7 +24,7 @@ cinch = Cinch::Bot.new do
 
   config.plugins.prefix = "!"
   
-  config.plugins.options[Cinch::HTTPServer] = {
+  config.plugins.options[Cinch::HttpServer] = {
     :host => "0.0.0.0",
     :port => 46664,
     :logfile => "#{DIR}/tmp/httpserver.log"
@@ -37,15 +38,14 @@ cinch = Cinch::Bot.new do
 
   config.plugins.plugins = [Cinch::Echo,
                             Cinch::HttpServer,
-                            Cinch::GithubCommits]
+                            Cinch::GithubCommits,
+                            Cinch::LogPlus]
 
   trap "SIGINT" do
-    bot.log("Cought SIGINT, quitting...", :info)
     bot.quit
   end
 
   trap "SIGTERM" do
-    bot.log("Cought SIGTERM, quitting...", :info)
     bot.quit
   end
 
