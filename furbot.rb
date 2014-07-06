@@ -6,6 +6,9 @@ require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
 require_relative "cinch-plugins/plugins/echo"
+require_relative "cinch-plugins/plugins/link_info"
+require_relative "cinch-plugins/plugins/tickets"
+require_relative "cinch-plugins/plugins/quit"
 
 DIR = File.dirname(File.expand_path(__FILE__))
 
@@ -36,10 +39,21 @@ cinch = Cinch::Bot.new do
      :timelogformat => "%H:%M"
    }
 
+  config.plugins.options[Cinch::Tickets] = {
+    :url => "https://github.com/Quintus/SMC/issues/%d"
+  }
+
+  config.plugins.options[Cinch::Quit] = {
+    :op => true
+  }
+
   config.plugins.plugins = [Cinch::Echo,
                             Cinch::HttpServer,
                             Cinch::GithubCommits,
-                            Cinch::LogPlus]
+                            Cinch::LogPlus,
+                            Cinch::LinkInfo,
+                            Cinch::Tickets,
+                            Cinch::Quit]
 
   trap "SIGINT" do
     bot.quit
