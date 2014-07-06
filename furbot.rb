@@ -2,6 +2,7 @@
 # -*- mode: ruby; coding: utf-8 -*-
 
 require "cinch"
+require "cinch/plugins/last_seen"
 require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
@@ -53,7 +54,8 @@ cinch = Cinch::Bot.new do
                             Cinch::LogPlus,
                             Cinch::LinkInfo,
                             Cinch::Tickets,
-                            Cinch::Quit]
+                            Cinch::Quit,
+                            Cinch::Plugins::LastSeen]
 
   trap "SIGINT" do
     bot.quit
