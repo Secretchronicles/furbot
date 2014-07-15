@@ -2,7 +2,6 @@
 # -*- mode: ruby; coding: utf-8 -*-
 
 require "cinch"
-require "cinch/plugins/last_seen"
 require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
@@ -10,6 +9,7 @@ require_relative "cinch-plugins/plugins/echo"
 require_relative "cinch-plugins/plugins/link_info"
 require_relative "cinch-plugins/plugins/tickets"
 require_relative "cinch-plugins/plugins/quit"
+require_relative "cinch-plugins/plugins/seen"
 
 DIR = File.dirname(File.expand_path(__FILE__))
 
@@ -34,6 +34,10 @@ cinch = Cinch::Bot.new do
     :logfile => "#{DIR}/tmp/httpserver.log"
   }
 
+  config.plugins.options[Cinch::Seen] = {
+    :file => "#{DIR}/tmp/seenlog.dat"
+  }
+
    config.plugins.options[Cinch::LogPlus] = {
      :plainlogdir => "#{DIR}/logs/plainlogs",
      :htmllogdir  => "#{DIR}/logs/htmllogs",
@@ -55,7 +59,7 @@ cinch = Cinch::Bot.new do
                             Cinch::LinkInfo,
                             Cinch::Tickets,
                             Cinch::Quit,
-                            Cinch::Plugins::LastSeen]
+                            Cinch::Seen]
 
   trap "SIGINT" do
     bot.quit

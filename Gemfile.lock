@@ -2,8 +2,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     cinch (2.1.0)
-    cinch-last_seen (0.0.2)
-      cinch (~> 2.0)
     daemons (1.1.9)
     eventmachine (1.0.3)
     mini_portile (0.6.0)
@@ -27,7 +25,6 @@ PLATFORMS
 
 DEPENDENCIES
   cinch
-  cinch-last_seen
   nokogiri
   sinatra
   thin
