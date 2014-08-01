@@ -15,7 +15,7 @@ DIR = File.dirname(File.expand_path(__FILE__))
 
 cinch = Cinch::Bot.new do
   configure do
-    config.server     = "chat.freenode.net"
+    config.server     = "rajaniemi.freenode.net"
     config.port       = 6697
     config.ssl.use    = true
     config.ssl.verify = false
