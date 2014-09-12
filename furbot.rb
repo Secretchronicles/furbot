@@ -2,6 +2,10 @@
 # -*- mode: ruby; coding: utf-8 -*-
 
 require "cinch"
+require "optparse"
+require "syslog"
+require "etc"
+require "fileutils"
 require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
@@ -12,10 +16,18 @@ require_relative "cinch-plugins/plugins/quit"
 require_relative "cinch-plugins/plugins/seen"
 
 DIR = File.dirname(File.expand_path(__FILE__))
+LOGFILE = "/var/log/furbot.log"
+
+if Process.uid != 0
+  $stderr.puts "Must be run as root. Use -g and -u options to drop privileges."
+  exit 1
+end
+
+#################### Cinch specification ####################
 
 cinch = Cinch::Bot.new do
   configure do
-    config.server     = "rajaniemi.freenode.net"
+    config.server     = IPSocket.getaddress("rajaniemi.freenode.net") # We have no DNS resolver in the chroot, so resolve here
     config.port       = 6697
     config.ssl.use    = true
     config.ssl.verify = false
@@ -31,16 +43,16 @@ cinch = Cinch::Bot.new do
   config.plugins.options[Cinch::HttpServer] = {
     :host => "0.0.0.0",
     :port => 46664,
-    :logfile => "#{DIR}/tmp/httpserver.log"
+    :logfile => "/other/httpserver.log"
   }
 
   config.plugins.options[Cinch::Seen] = {
-    :file => "#{DIR}/tmp/seenlog.dat"
+    :file => "/other/seenlog.dat"
   }
 
    config.plugins.options[Cinch::LogPlus] = {
-     :plainlogdir => "#{DIR}/logs/plainlogs",
-     :htmllogdir  => "#{DIR}/logs/htmllogs",
+     :plainlogdir => "/logs/plainlogs",
+     :htmllogdir  => "/logs/htmllogs",
      :timelogformat => "%H:%M"
    }
 
@@ -69,9 +81,182 @@ cinch = Cinch::Bot.new do
     bot.quit
   end
 
-  file = File.open("#{DIR}/tmp/bot.log", "a")
-  file.sync = true
-  loggers.push(Cinch::Logger::FormattedLogger.new(file))
+end
+
+#################### Argument handling ####################
+
+$options = {
+  :daemon => false,
+  :pidfile => "/var/run/furbot.pid"
+}
+
+op = OptionParser.new do |opts|
+  opts.banner = "Usage: furbot.rb [OPTIONS]"
+
+  opts.separator ""
+
+  opts.on("-p", "--pid-file FILE", "Write process ID to FILE on startup"){|path| $options[:pidfile] = path}
+  opts.on("-d", "--[no-]daemon", "Daemonize."){|bool| $options[:daemon] = bool}
+  opts.on("-u", "--uid NAME", "User to run as."){|uid| $options[:user] = uid}
+  opts.on("-g", "--gid NAME", "Group to run as."){|gid| $options[:group] = gid}
+
+  opts.on_tail("-h", "--help"){puts(opts); exit(0)}
+end
+
+op.parse!
+
+case ARGV.last
+when "stop" then
+  unless File.exist?($options[:pidfile])
+    $stderr.puts "Not running."
+    exit 1
+  end
+
+  pid = File.read($options[:pidfile]).to_i
+
+  # Check if such a process exists
+  begin
+    Process.kill(0, pid)
+  rescue Errno::ESRCH
+    puts "No process with PID #{pid}, removing stale PIDfile."
+    File.delete($options[:pidfile])
+    exit 1
+  rescue Errno::EPERM
+    $stderr.puts "Unable to send signals to process #{pid}!"
+    exit 2
+  end
+
+  puts "Sending SIGTERM to #{pid}."
+  Process.kill("SIGTERM", pid)
+  File.delete($options[:pidfile]) # Clean pidfile up so we can start anew
+
+  # If the process does not exit withing 10 seconds, forcibly kill it.
+  sleep 10
+  begin
+    if Process.kill(0, pid) > 0
+      # Process still exists, SIGKILL it.
+      puts "Process #{pid} still exists, sending SIGKILL."
+      Process.kill("SIGKILL", pid)
+    end
+  rescue Errno::ESRCH
+    # Good, process is gone
+  end
+
+  # Nothing more to do
+  exit
+when "start" then
+  # Do nothing, continue execution below
+else
+  $stderr.puts op
+  exit
+end
+
+#################### Start action code ####################
+
+# Nice process name
+$0 = "furbot"
+
+# Open the syslog
+Syslog.open("furbot")
+Syslog.log(Syslog::LOG_INFO, "Starting up.")
+at_exit do
+  Syslog.log(Syslog::LOG_INFO, "Finished, closing syslog.")
+  Syslog.close
+end
+
+# Open the cinch-specific logfile
+logfile = File.open(LOGFILE, "a")
+File.chown(0, Etc.getgrnam("adm").gid, LOGFILE) # 0 = root
+File.chmod(0640, LOGFILE) # rw-r-----
+logfile.sync = true
+
+if $options[:daemon]
+  $stdout = $stderr = logfile
+  cinch.loggers.clear # Log to $stdout unless daemonized
+end
+
+cinch.loggers.push(Cinch::Logger::FormattedLogger.new(logfile))
+Syslog.log(Syslog::LOG_INFO, "Detailed log file is at '#{LOGFILE}'.")
+
+# Set our file permissions
+File.umask 0133 # rw-r--r--
+
+# Create directories for logging
+FileUtils.mkdir_p("#{DIR}/tmp/other")
+FileUtils.mkdir_p("#{DIR}/tmp/logs/htmllogs")
+FileUtils.mkdir_p("#{DIR}/tmp/logs/plainlogs")
+
+File.chmod(0755, "#{DIR}/tmp/other")
+File.chmod(0755, "#{DIR}/tmp/logs")
+File.chmod(0755, "#{DIR}/tmp/logs/htmllogs")
+File.chmod(0755, "#{DIR}/tmp/logs/plainlogs")
+
+# We need these two later again for privilege dropping
+uid = nil
+gid = nil
+if $options[:user] && $options[:group]
+  uid = Etc.getpwnam($options[:user]).uid
+  gid = Etc.getgrnam($options[:group]).gid
+
+  File.chown(uid, gid, "#{DIR}/tmp/other")
+  File.chown(uid, gid, "#{DIR}/tmp/logs")
+  File.chown(uid, gid, "#{DIR}/tmp/logs/htmllogs")
+  File.chown(uid, gid, "#{DIR}/tmp/logs/plainlogs")
+end
+
+# Daemonize if requested
+if $options[:daemon]
+  if pid = fork
+    Process.detach(pid)
+    puts "Forked with PID #{pid}."
+    exit
+  end
+
+  #### Daemon setup ###
+
+  # Request new session ID
+  Process.setsid
+
+  # Close useless streams for cleanup
+  STDIN.close
+  STDOUT.close
+  STDERR.close
+
+  # Bail out if an instance is already running.
+  if File.exist?($options[:pidfile])
+    Syslog.log(Syslog::LOG_CRIT, "PID file #{$options[:pidfile]} already exists. Exiting.")
+    exit 1
+  end
+
+  # Write PID into PIDfile. Note we do not change PIDfile ownership to
+  # prevent a PIDfile injection attack that wants to fool the process
+  # manager. The PIDfile is unwritable for us after privilege dropping.
+  File.open($options[:pidfile], "w"){|f| f.write($$)}
+
+  Syslog.log(Syslog::LOG_INFO, "Wrote PID #{$$} to PIDfile '#{$options[:pidfile]}'.")
+else
+  # Never write a PIDfile if not a daemon
+  $options.delete :pidfile
+end
+
+# Chroot so no external access anymore.
+Dir.chroot("#{DIR}/tmp")
+Dir.chdir("/")
+
+# Drop privileges
+Process::Sys.setgid(gid) if $options[:group]
+Process::Sys.setuid(uid) if $options[:user]
+
+# Ensure we have permanently lost privileges
+if $options[:user]
+  begin
+    Process::Sys.setuid(0)
+  rescue Errno::EPERM
+    Syslog.log(Syslog::LOG_INFO, "Successfully dropped privileges.")
+  else
+    Syslog.log(Syslog::LOG_CRIT, "Regained root privileges! Exiting!")
+    raise "Regained root privileges!"
+  end
 end
 
 cinch.start
