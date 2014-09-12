@@ -23,66 +23,6 @@ if Process.uid != 0
   exit 1
 end
 
-#################### Cinch specification ####################
-
-cinch = Cinch::Bot.new do
-  configure do
-    config.server     = IPSocket.getaddress("rajaniemi.freenode.net") # We have no DNS resolver in the chroot, so resolve here
-    config.port       = 6697
-    config.ssl.use    = true
-    config.ssl.verify = false
-
-    config.channels = ["#secretchronicles"]
-    config.nick   = "furbot"
-    config.user   = "furbot"
-    config.realname = "Furball Bot Left"
-  end
-
-  config.plugins.prefix = "!"
-  
-  config.plugins.options[Cinch::HttpServer] = {
-    :host => "0.0.0.0",
-    :port => 46664,
-    :logfile => "/other/httpserver.log"
-  }
-
-  config.plugins.options[Cinch::Seen] = {
-    :file => "/other/seenlog.dat"
-  }
-
-   config.plugins.options[Cinch::LogPlus] = {
-     :plainlogdir => "/logs/plainlogs",
-     :htmllogdir  => "/logs/htmllogs",
-     :timelogformat => "%H:%M"
-   }
-
-  config.plugins.options[Cinch::Tickets] = {
-    :url => "https://github.com/Secretchronicles/SMC/issues/%d"
-  }
-
-  config.plugins.options[Cinch::Quit] = {
-    :op => true
-  }
-
-  config.plugins.plugins = [Cinch::Echo,
-                            Cinch::HttpServer,
-                            Cinch::GithubCommits,
-                            Cinch::LogPlus,
-                            Cinch::LinkInfo,
-                            Cinch::Tickets,
-                            Cinch::Quit,
-                            Cinch::Seen]
-
-  trap "SIGINT" do
-    bot.quit
-  end
-
-  trap "SIGTERM" do
-    bot.quit
-  end
-
-end
-
 #################### Argument handling ####################
 
 $options = {
@@ -149,6 +89,77 @@ when "start" then
 else
   $stderr.puts op
   exit
+end
+
+#################### Cinch specification ####################
+
+cinch = Cinch::Bot.new do
+  configure do
+    config.server     = IPSocket.getaddress("rajaniemi.freenode.net") # We have no DNS resolver in the chroot, so resolve here
+    config.port       = 6697
+    config.ssl.use    = true
+    config.ssl.verify = false
+
+    config.channels = ["#secretchronicles"]
+    config.nick   = "furbot"
+    config.user   = "furbot"
+    config.realname = "Furball Bot Left"
+  end
+
+  config.plugins.prefix = "!"
+
+  config.plugins.options[Cinch::HttpServer] = {
+    :host => "0.0.0.0",
+    :port => 46664,
+    :logfile => "/other/httpserver.log"
+  }
+
+  config.plugins.options[Cinch::Seen] = {
+    :file => "/other/seenlog.dat"
+  }
+
+   config.plugins.options[Cinch::LogPlus] = {
+     :plainlogdir => "/logs/plainlogs",
+     :htmllogdir  => "/logs/htmllogs",
+     :timelogformat => "%H:%M"
+   }
+
+  config.plugins.options[Cinch::Tickets] = {
+    :url => "https://github.com/Secretchronicles/SMC/issues/%d"
+  }
+
+  config.plugins.options[Cinch::Quit] = {
+    :op => true
+  }
+
+  config.plugins.plugins = [Cinch::Echo,
+                            Cinch::HttpServer,
+                            Cinch::GithubCommits,
+                            Cinch::LogPlus,
+                            Cinch::LinkInfo,
+                            Cinch::Tickets,
+                            Cinch::Quit,
+                            Cinch::Seen]
+
+  # Signal handling
+  on :connect do
+    quitnow = false
+    Timer(5) do
+      if quitnow
+        bot.loggers.warn quitnow
+        bot.quit(quitnow)
+      end
+    end
+
+    trap "SIGINT" do
+      quitnow = "Received SIGINT."
+    end
+
+    trap "SIGTERM" do
+      quitnow = "Received SIGTERM."
+    end
+  end
+
 end
 
 #################### Start action code ####################
