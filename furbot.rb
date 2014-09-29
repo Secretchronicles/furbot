@@ -109,6 +109,17 @@ cinch = Cinch::Bot.new do
     config.realname = "Furball Bot Left"
   end
 
+  # Use this one for testing on a local server instead
+  #configure do
+  #  config.server     = "localhost"
+  #  config.port       = 6667
+  #
+  #  config.channels = ["#test"]
+  #  config.nick   = "furbot"
+  #  config.user   = "furbot"
+  #  config.realname = "Furball Bot Left"
+  #end
+
   config.plugins.prefix = "!"
 
   config.plugins.options[Cinch::HttpServer] = {
