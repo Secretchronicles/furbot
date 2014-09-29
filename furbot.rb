@@ -6,6 +6,8 @@ require "optparse"
 require "syslog"
 require "etc"
 require "fileutils"
+require "net/http"
+require "net/https"
 require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
@@ -95,7 +97,7 @@ end
 
 cinch = Cinch::Bot.new do
   configure do
-    config.server     = IPSocket.getaddress("rajaniemi.freenode.net") # We have no DNS resolver in the chroot, so resolve here
+    config.server     = "rajaniemi.freenode.net"
     config.port       = 6697
     config.ssl.use    = true
     config.ssl.verify = false
@@ -248,6 +250,9 @@ if $options[:daemon]
 else
   # Never write a PIDfile if not a daemon
   $options.delete :pidfile
+
+  # Crash completely if not daemon and a thread crashes
+  Thread.abort_on_exception = true
 end
 
 # Chroot so no external access anymore.
