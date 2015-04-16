@@ -99,7 +99,7 @@ end
 
 cinch = Cinch::Bot.new do
   configure do
-    config.server     = "rajaniemi.freenode.net"
+    config.server     = "chat.freenode.net"
     config.port       = 6697
     config.ssl.use    = true
     config.ssl.verify = false
