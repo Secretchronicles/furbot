@@ -277,6 +277,13 @@ else
   Thread.abort_on_exception = true
 end
 
+# Ensure there’s a NULL device in the chroot
+unless File.directory?("#{DIR}/tmp/dev")
+  Dir.mkdir("#{DIR}/tmp/dev")
+  File.chmod(0755, "#{DIR}/tmp/dev")
+end
+system("mknod -m 666 '#{DIR}/tmp/dev/null' c 1 3") unless File.exist?("#{DIR}/tmp/dev/null")
+
 # Chroot so no external access anymore.
 Dir.chroot("#{DIR}/tmp")
 Dir.chdir("/")
