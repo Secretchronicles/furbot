@@ -183,6 +183,9 @@ cinch = Cinch::Bot.new do
     end
   end
 
+  on :message, /!search (.*)/ do |msg, term|
+    msg.channel.send("https://duckduckgo.com/?q=#{CGI.escape(term)}")
+  end
 
 end
 
