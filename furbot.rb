@@ -175,6 +175,15 @@ cinch = Cinch::Bot.new do
     end
   end
 
+  on :message, "!fixnick" do |msg|
+    if bot.nick == "furbot"
+      msg.reply("Nothing to do.")
+    else
+      bot.nick = "furbot"
+    end
+  end
+
+
 end
 
 #################### Start action code ####################
