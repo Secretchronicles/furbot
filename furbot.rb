@@ -8,6 +8,7 @@ require "etc"
 require "fileutils"
 require "net/http"
 require "net/https"
+require "time"
 require "enc/trans/single_byte"
 require "rack/multipart/parser"
 require_relative "cinch-plugins/plugins/http_server"
@@ -185,6 +186,54 @@ cinch = Cinch::Bot.new do
 
   on :message, /!search (.*)/ do |msg, term|
     msg.channel.send("https://duckduckgo.com/?q=#{CGI.escape(term)}")
+  end
+
+  on :message, /!tzconv (.*?) (\w+) to (\w+)$/ do |msg, sourcetimestr, source, target|
+    # Time.zone_offset only has a few selected zones.
+    # Let’s add some more.
+    more_zones = {"CET"  => 60 * 60,     # Central European Time
+                  "CEST" => 60 * 60 * 2, # Central European Summer Time
+                  "EET"  => 60 * 60 * 2, # Eastern European Time
+                  "EEST" => 60 * 60 * 3, # Eastern European Summer Time
+                  "WET"  => 0,           # Western European Time
+                  "WEST" => 60 * 60,     # Western European Summer Time
+                  "WEDT" => 60 * 60,     # Western European Daylight Time
+                  "CNST" => 60 * 60 * 8, # Chinese Standard Time
+                  "JST"  => 60 * 60 * 9, # Japan Standard Time
+                  "ACST" => 60 * 60 * 9 + 30,  # Australian Central Standard Time
+                  "ACDT" => 60 * 60 * 10 + 30, # Australian Central Daylight Time
+                  "AEST" => 60 * 60 * 10,      # Australian Eastern Standard Time
+                  "AEDT" => 60 * 60 * 11,      # Australian Eastern Daylight Time
+                  "NZST" => 60 * 60 * 12,      # New Zealand Standard Time
+                  "NZDT" => 60 * 60 * 13}      # New Zealand Daylight Time
+
+    sourcetime = Time.parse(sourcetimestr)
+
+    # The above yields a wrong result (local time zone). Force
+    # into the correct zone.
+    if offset = Time.zone_offset(source) || offset = more_zones[source] # Single = intended
+      sourcetime = Time.new(sourcetime.year, sourcetime.month, sourcetime.day,
+                            sourcetime.hour, sourcetime.min, sourcetime.sec,
+                            offset)
+    else
+      msg.reply "I don’t know the source timezone #{source}."
+      next
+    end
+
+    target_offset = Time.zone_offset(target) || more_zones[target]
+
+    unless target_offset
+      msg.reply "I don’t know the target timezone #{target}."
+      next
+    end
+
+    target_time = sourcetime.dup.utc
+    target_time += target_offset
+    target_time = Time.new(target_time.year, target_time.month, target_time.day,
+                           target_time.hour, target_time.min, target_time.sec,
+                           target_offset)
+
+    msg.reply "#{sourcetime} in #{target} is #{target_time}"
   end
 
 end
