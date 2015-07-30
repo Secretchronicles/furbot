@@ -94,11 +94,11 @@ SHAKESPEARE
   private
 
   [:on_join, :on_leaving, :on_nick].each do |sym|
-    define_method(sym){ |msg| quote(msg.channel, 25) }
+    define_method(sym){ |msg| quote(msg.channel, 10) }
   end
 
   def on_channel(msg)
-    quote(msg.channel, 10)
+    quote(msg.channel, 2)
   end
 
   def quote(channel, likelihood)
