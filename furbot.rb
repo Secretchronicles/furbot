@@ -19,6 +19,7 @@ require_relative "cinch-plugins/plugins/link_info"
 require_relative "cinch-plugins/plugins/tickets"
 require_relative "cinch-plugins/plugins/quit"
 require_relative "cinch-plugins/plugins/seen"
+require_relative "other_plugins/shakespeare"
 
 DIR = File.dirname(File.expand_path(__FILE__))
 LOGFILE = "/var/log/furbot.log"
@@ -155,6 +156,7 @@ cinch = Cinch::Bot.new do
                             Cinch::LinkInfo,
                             Cinch::Tickets,
                             Cinch::Quit,
+                            Cinch::Shakespeare,
                             Cinch::Seen]
 
   # Signal handling
