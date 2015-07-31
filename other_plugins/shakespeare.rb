@@ -86,8 +86,8 @@ The common curse of mankind, — folly and ignorance. (Troilus and Cressida, Act
 Nature teaches beasts to know their friends. (Coriolanus, Act II, Scene I)
 SHAKESPEARE
 
-  listen_to :join,    :method => :on_join
-  listen_to :leaving, :method => :on_leaving
+  #listen_to :join,    :method => :on_join
+  #listen_to :leaving, :method => :on_leaving
   listen_to :nick,    :method => :on_nick
   listen_to :channel, :method => :on_channel
 
