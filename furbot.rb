@@ -144,7 +144,7 @@ cinch = Cinch::Bot.new do
 
    config.plugins.options[Cinch::Vote] = {
      :auth_required => true,
-     :voters => %w[brianvanderburg2 Bugsbane DarkAceZ datahead8888 Luiji Quintus_q sauer2 sydneyjd xez7]
+     :voters => %w[brianvanderburg2 Bugsbane DarkAceZ datahead8888 Luiji Quintus_q sauer2 sydneyjd xet7]
    }
 
   config.plugins.options[Cinch::Tickets] = {
