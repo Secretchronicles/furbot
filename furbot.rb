@@ -16,6 +16,7 @@ require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
 require_relative "cinch-plugins/plugins/echo"
 require_relative "cinch-plugins/plugins/link_info"
+require_relative "cinch-plugins/plugins/vote"
 require_relative "cinch-plugins/plugins/tickets"
 require_relative "cinch-plugins/plugins/quit"
 require_relative "cinch-plugins/plugins/seen"
@@ -139,6 +140,11 @@ cinch = Cinch::Bot.new do
      :plainlogdir => "/logs/plainlogs",
      :htmllogdir  => "/logs/htmllogs",
      :timelogformat => "%H:%M"
+  }
+
+   config.plugins.options[Cinch::Vote] = {
+     :auth_required => true,
+     :voters => %w[brianvanderburg2 Bugsbane DarkAceZ datahead8888 Luiji Quintus_q sauer2 sydneyjd xez7]
    }
 
   config.plugins.options[Cinch::Tickets] = {
@@ -157,6 +163,7 @@ cinch = Cinch::Bot.new do
                             Cinch::Tickets,
                             Cinch::Quit,
                             Cinch::Shakespeare,
+                            Cinch::Vote,
                             Cinch::Seen]
 
   # Signal handling
