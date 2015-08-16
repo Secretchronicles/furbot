@@ -102,7 +102,7 @@ SHAKESPEARE
   end
 
   def quote(channel, likelihood)
-    return if rand(100) > likelihood
+    return if rand(1000) > likelihood
 
     ary = get_random_quote
     channel.send(ary[0])
