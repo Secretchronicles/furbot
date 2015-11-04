@@ -84,6 +84,7 @@ Thus the whirligig of time brings in his revenges. (Taming of the Shrew, Act V, 
 For the rain it raineth every day. (Taming of the Shrew, Act V, Scene I)
 The common curse of mankind, — folly and ignorance. (Troilus and Cressida, Act II, Scene III)
 Nature teaches beasts to know their friends. (Coriolanus, Act II, Scene I)
+It is a tale told by an idiot, full of sound and fury, signifying nothing. (Macbeth, Act V, Scene V)
 SHAKESPEARE
 
   #listen_to :join,    :method => :on_join
