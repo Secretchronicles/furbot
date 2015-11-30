@@ -20,6 +20,7 @@ require_relative "cinch-plugins/plugins/vote"
 require_relative "cinch-plugins/plugins/tickets"
 require_relative "cinch-plugins/plugins/quit"
 require_relative "cinch-plugins/plugins/seen"
+require_relative "cinch-plugins/plugins/channel_record"
 require_relative "other_plugins/shakespeare"
 
 DIR = File.dirname(File.expand_path(__FILE__))
@@ -155,6 +156,11 @@ cinch = Cinch::Bot.new do
     :op => true
   }
 
+  config.plugins.options[Cinch::ChannelRecord] = {
+    :file => "/other/channelrecord.dat"
+  }
+
+
   config.plugins.plugins = [Cinch::Echo,
                             Cinch::HttpServer,
                             Cinch::GithubCommits,
@@ -164,7 +170,8 @@ cinch = Cinch::Bot.new do
                             Cinch::Quit,
                             Cinch::Shakespeare,
                             Cinch::Vote,
-                            Cinch::Seen]
+                            Cinch::Seen,
+                            Cinch::ChannelRecord]
 
   # Signal handling
   on :connect do
