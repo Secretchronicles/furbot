@@ -1,0 +1,17 @@
+[Unit]
+Description=furbot IRC bot
+After=network.target
+
+[Service]
+Type=forking
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=furbot
+PIDFile=/var/run/furbot.pid
+WorkingDirectory=/home/furbot
+Environment="RACK_ENV=production"
+ExecStart=/usr/bin/bundle exec ruby furbot.rb -p /var/run/furbot.pid -u furbot -g furbot
+#Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

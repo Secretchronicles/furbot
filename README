@@ -1,3 +1,20 @@
-This is code for the IRC bot that hangs around in #secretchronicles on chat.freenode.net. It uses Cinch (https://github.com/cinchrb/cinch).
+This is code for the IRC bot that hangs around in #secretchronicles on
+chat.freenode.net. It uses Cinch (https://github.com/cinchrb/cinch).
+
+First, install all of its dependencies (requires bundler):
+
+    # gem install --no-user-install bundler # if not yet installed
+    $ bundle install --path .gems
+
+Now, run it as root:
+
+    # bundle exec ruby furbot.rb -u furbot -g furbot -p /run
+
+furbot immediately enters a chroot and drops root privileges,
+switching to the user/group combination that was given via the -u and
+-g options.
+
+There's also a systemd .service file provided that you might want to
+adapt.
 
 Licensed under the GNU GPL version 3.
