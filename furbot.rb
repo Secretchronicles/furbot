@@ -117,27 +117,24 @@ cinch = Cinch::Bot.new do
                             Cinch::Seen,
                             Cinch::ChannelRecord]
 
-  # Signal handling
-  on :connect do
-    quitnow = false
-    Timer(5) do
-      if quitnow
-        bot.loggers.warn quitnow
-        bot.quit(quitnow)
-      end
+  $quitnow = false
+  Timer(5) do
+    if $quitnow
+      bot.loggers.warn $quitnow
+      bot.quit($quitnow)
     end
+  end
 
-    Timer(60 * 10) do
-      bot.nick = "furbot" unless bot.nick == "furbot"
-    end
+  Timer(60 * 10) do
+    bot.nick = "furbot" unless bot.nick == "furbot"
+  end
 
-    trap "SIGINT" do
-      quitnow = "Received SIGINT."
-    end
+  trap "SIGINT" do
+    $quitnow = "Received SIGINT."
+  end
 
-    trap "SIGTERM" do
-      quitnow = "Received SIGTERM."
-    end
+  trap "SIGTERM" do
+    $quitnow = "Received SIGTERM."
   end
 
   on :message, /!search (.*)/ do |msg, term|
