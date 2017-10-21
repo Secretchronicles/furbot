@@ -3,14 +3,13 @@ Description=furbot IRC bot
 After=network.target
 
 [Service]
-Type=forking
+Type=simple
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=furbot
-PIDFile=/var/run/furbot.pid
-WorkingDirectory=/home/furbot
+WorkingDirectory=/home/smc/furbot
 Environment="RACK_ENV=production"
-ExecStart=/usr/bin/bundle exec ruby furbot.rb -p /var/run/furbot.pid -u furbot -g furbot
+ExecStart=/usr/local/bin/bundle exec ruby furbot.rb
 #Restart=on-failure
 
 [Install]
