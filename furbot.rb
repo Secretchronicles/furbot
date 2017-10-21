@@ -69,8 +69,7 @@ cinch = Cinch::Bot.new do
 
   config.plugins.options[Cinch::HttpServer] = {
     :host => "0.0.0.0",
-    :port => 46664,
-    :logfile => "/tmp/f/other/httpserver.log"
+    :port => 46664
   }
 
   config.plugins.options[Cinch::Seen] = {
