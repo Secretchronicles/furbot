@@ -127,20 +127,16 @@ cinch = Cinch::Bot.new do
       end
     end
 
+    Timer(60 * 10) do
+      bot.nick = "furbot" unless bot.nick == "furbot"
+    end
+
     trap "SIGINT" do
       quitnow = "Received SIGINT."
     end
 
     trap "SIGTERM" do
       quitnow = "Received SIGTERM."
-    end
-  end
-
-  on :message, "!fixnick" do |msg|
-    if bot.nick == "furbot"
-      msg.reply("Nothing to do.")
-    else
-      bot.nick = "furbot"
     end
   end
 
