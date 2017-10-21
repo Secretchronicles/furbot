@@ -9,6 +9,8 @@ StandardError=syslog
 SyslogIdentifier=furbot
 WorkingDirectory=/home/smc/furbot
 Environment="RACK_ENV=production"
+User=smc
+Group=smc
 ExecStart=/usr/local/bin/bundle exec ruby furbot.rb
 #Restart=on-failure
 
