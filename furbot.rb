@@ -96,9 +96,8 @@ cinch = Cinch::Bot.new do
   }
 
   config.plugins.options[Cinch::ChannelRecord] = {
-    :file => "/tmp/f/other/channelrecord.dat"
+    :file => "/var/lib/furbot/channelrecord.dat"
   }
-
 
   config.plugins.plugins = [Cinch::Echo,
                             Cinch::HttpServer,
