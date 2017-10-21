@@ -78,7 +78,8 @@ cinch = Cinch::Bot.new do
   }
 
   config.plugins.options[Cinch::Seen] = {
-    :file => "/tmp/f/other/seenlog.dat"
+    :file => "/tmp/f/other/seenlog.dat",
+    :max_age => 60 * 60 * 24 * 365 # 1 year
   }
 
    config.plugins.options[Cinch::LogPlus] = {
