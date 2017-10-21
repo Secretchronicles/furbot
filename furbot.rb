@@ -49,8 +49,8 @@ cinch = Cinch::Bot.new do
     config.ssl.verify = false
 
     config.channels = ["#secretchronicles"]
-    config.nick   = "quintus-furbot"
-    config.user   = "quintus-furbot"
+    config.nick   = "furbot"
+    config.user   = "furbot"
     config.realname = "Furball Bot Left"
   end
 
