@@ -4,13 +4,8 @@
 require "cinch"
 require "optparse"
 require "syslog"
-require "etc"
 require "fileutils"
-require "net/http"
-require "net/https"
 require "time"
-require "enc/trans/single_byte"
-require "rack/multipart/parser"
 require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
@@ -22,13 +17,14 @@ require_relative "cinch-plugins/plugins/quit"
 require_relative "cinch-plugins/plugins/seen"
 require_relative "cinch-plugins/plugins/channel_record"
 require_relative "other_plugins/shakespeare"
+require_relative "cinch_syslog"
 
 DIR = File.dirname(File.expand_path(__FILE__))
-LOGFILE = "/tmp/f/furbot.log"
 
 #################### Argument handling ####################
 
 $options = {
+  :debug => false
 }
 
 op = OptionParser.new do |opts|
@@ -36,7 +32,7 @@ op = OptionParser.new do |opts|
 
   opts.separator ""
 
-  opts.on("-d", "--[no-]debug", "Write complete output log to /tmp/furbot.log."){|bool| $options[:debug] = bool}
+  opts.on("-d", "--[no-]debug", "Log verbosely to the standard output."){|bool| $options[:debug] = bool}
 
   opts.on_tail("-h", "--help"){puts(opts); exit(0)}
 end
@@ -204,28 +200,13 @@ at_exit do
   Syslog.close
 end
 
-# Open the cinch-specific logfile
-logfile = File.open(LOGFILE, "a")
-#File.chown(0, Etc.getgrnam("adm").gid, LOGFILE) # 0 = root
-File.chmod(0640, LOGFILE) # rw-r-----
-logfile.sync = true
-
-#cinch.loggers.clear # Log to $stdout unless daemonized
-cinch.loggers.push(Cinch::Logger::FormattedLogger.new(logfile))
-Syslog.log(Syslog::LOG_INFO, "Detailed log file is at '#{LOGFILE}'.")
+syslogger = CinchSyslogLogger.new
+syslogger.level = :info
+cinch.loggers.clear unless $options[:debug]
+cinch.loggers.push(syslogger)
 
 # Set our file permissions
 File.umask 0133 # rw-r--r--
-
-# Create directories for logging
-FileUtils.mkdir_p("#{DIR}/tmp/other")
-FileUtils.mkdir_p("#{DIR}/tmp/logs/htmllogs")
-FileUtils.mkdir_p("#{DIR}/tmp/logs/plainlogs")
-
-File.chmod(0755, "#{DIR}/tmp/other")
-File.chmod(0755, "#{DIR}/tmp/logs")
-File.chmod(0755, "#{DIR}/tmp/logs/htmllogs")
-File.chmod(0755, "#{DIR}/tmp/logs/plainlogs")
 
 Thread.abort_on_exception = true
 Dir.chdir("/")

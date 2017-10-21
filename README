@@ -6,13 +6,15 @@ First, install all of its dependencies (requires bundler):
     # gem install --no-user-install bundler # if not yet installed
     $ bundle install --path .gems
 
-Now, run it as root:
+Now, run it:
 
-    # bundle exec ruby furbot.rb -u furbot -g furbot -p /run
+    $ bundle exec ruby furbot.rb
 
-furbot immediately enters a chroot and drops root privileges,
-switching to the user/group combination that was given via the -u and
--g options.
+furbot logs to the syslog. If you need detailed debug logging, invoke
+it with the -d option, which will make it dump the entire connection
+stream to standard output.
+
+    $ bundle exec ruby furbot.rb -d
 
 There's also a systemd .service file provided that you might want to
 adapt.
