@@ -88,7 +88,7 @@ cinch = Cinch::Bot.new do
    }
 
   config.plugins.options[Cinch::Tickets] = {
-    :url => "https://github.com/Secretchronicles/SMC/issues/%d"
+    :url => "https://github.com/Secretchronicles/TSC/issues/%d"
   }
 
   config.plugins.options[Cinch::Quit] = {
