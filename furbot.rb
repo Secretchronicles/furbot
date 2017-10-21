@@ -11,8 +11,8 @@ require "net/https"
 require "time"
 require "enc/trans/single_byte"
 require "rack/multipart/parser"
-require_relative "cinch-plugins/plugins/http_server"
-require_relative "cinch-plugins/plugins/github_commits"
+#require_relative "cinch-plugins/plugins/http_server"
+#require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
 require_relative "cinch-plugins/plugins/echo"
 require_relative "cinch-plugins/plugins/link_info"
@@ -71,11 +71,11 @@ cinch = Cinch::Bot.new do
 
   config.plugins.prefix = "!"
 
-  config.plugins.options[Cinch::HttpServer] = {
-    :host => "0.0.0.0",
-    :port => 46664,
-    :logfile => "/tmp/f/other/httpserver.log"
-  }
+  #config.plugins.options[Cinch::HttpServer] = {
+  #  :host => "0.0.0.0",
+  #  :port => 46664,
+  #  :logfile => "/tmp/f/other/httpserver.log"
+  #}
 
   config.plugins.options[Cinch::Seen] = {
     :file => "/tmp/f/other/seenlog.dat"
@@ -106,8 +106,8 @@ cinch = Cinch::Bot.new do
 
 
   config.plugins.plugins = [Cinch::Echo,
-                            Cinch::HttpServer,
-                            Cinch::GithubCommits,
+#                            Cinch::HttpServer,
+#                            Cinch::GithubCommits,
                             Cinch::LogPlus,
                             Cinch::LinkInfo,
                             Cinch::Tickets,
