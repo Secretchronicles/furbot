@@ -4,8 +4,8 @@
 require "cinch"
 require "optparse"
 require "syslog"
-require "fileutils"
 require "time"
+require "pathname"
 require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
@@ -206,6 +206,12 @@ cinch.loggers.push(syslogger)
 
 # Set our file permissions
 File.umask 0133 # rw-r--r--
+
+# Fail if target directories do not exist
+p1 = Pathname.new(cinch.config.plugins.options[Cinch::Seen][:file]).dirname
+p2 = Pathname.new(cinch.config.plugins.options[Cinch::LogPlus][:logdir])
+fail "Not a directory: #{p1}" unless p1.directory?
+fail "Not a directory: #{p2}" unless p2.directory?
 
 Thread.abort_on_exception = true
 Dir.chdir("/")
