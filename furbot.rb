@@ -83,8 +83,7 @@ cinch = Cinch::Bot.new do
   }
 
    config.plugins.options[Cinch::LogPlus] = {
-     :plainlogdir => "/tmp/f/logs/plainlogs",
-     :htmllogdir  => "/tmp/f/logs/htmllogs",
+     :logdir  => "/tmp/f/logs/htmllogs",
      :timelogformat => "%H:%M"
   }
 
