@@ -1,14 +1,19 @@
 This is code for the IRC bot that hangs around in #secretchronicles on
 chat.freenode.net. It uses Cinch (https://github.com/cinchrb/cinch).
 
-First, install all of its dependencies (requires bundler):
+First, install all of its dependencies by running the following
+commands in the project directory:
 
-    # gem install --no-user-install bundler # if not yet installed
+    # gem install --no-user-install bundler # only if not yet installed
     $ bundle install --path .gems
 
 Now, run it:
 
     $ bundle exec ruby furbot.rb
+
+If it refuses to start because some directories are missing or not
+writable for the user running it, create those directories and make
+them writable for the user under which you run furbot.
 
 furbot logs to the syslog. If you need detailed debug logging, invoke
 it with the -d option, which will make it dump the entire connection
