@@ -24,4 +24,5 @@ stream to standard output.
 There's also a systemd .service file provided that you might want to
 adapt.
 
-Licensed under the GNU GPL version 3.
+Licensed under the GNU GPL version 3. Includes some BSD-licensed
+software; see the respective note in cinch_syslog.rb.
