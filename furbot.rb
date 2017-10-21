@@ -78,7 +78,7 @@ cinch = Cinch::Bot.new do
   }
 
    config.plugins.options[Cinch::LogPlus] = {
-     :logdir  => "/home/smc/irclogs-archive/htmllogs",
+     :logdir  => "/var/www/chatlogs",
      :timelogformat => "%H:%M"
   }
 
