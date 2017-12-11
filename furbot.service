@@ -8,7 +8,7 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=furbot
 WorkingDirectory=/home/smc/furbot
-Environment="RACK_ENV=production"
+Environment="RACK_ENV=production" "LANG=en_US.UTF-8"
 User=smc
 Group=smc
 ExecStart=/usr/local/bin/bundle exec ruby furbot.rb
