@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+require "open-uri"
+require "nokogiri"
+
 class Cinch::MailmanObserver
   include Cinch::Plugin
 
@@ -31,7 +34,14 @@ class Cinch::MailmanObserver
 
     while line = @mailman_log.gets
       if line =~ /HyperKitty archived message <(.*?)> to (https?:\/\/.*)$/
-        bot.channels.each{|c| c.send("New mailinglist message: #$2")}
+        url = $2
+
+        bot.channels.each{|c| c.send("New mailinglist message: #{url}")}
+
+        html = Nokogiri::HTML(open(url))
+        if node = html.at_xpath("html/head/title")
+          bot.channels.each{|c| c.send("Subject: #{node.text.strip}")}
+        end
       end
     end
 
