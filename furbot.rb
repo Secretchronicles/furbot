@@ -17,6 +17,7 @@ require_relative "cinch-plugins/plugins/quit"
 require_relative "cinch-plugins/plugins/seen"
 require_relative "cinch-plugins/plugins/channel_record"
 require_relative "other_plugins/shakespeare"
+require_relative "other_plugins/mailinglist"
 require_relative "cinch_syslog"
 
 DIR = File.dirname(File.expand_path(__FILE__))
@@ -99,6 +100,10 @@ cinch = Cinch::Bot.new do
     :file => "/var/lib/furbot/channelrecord.dat"
   }
 
+  config.plugins.options[Cinch::MailmanObserver] = {
+    :logfile => "/home/mailman/var/logs/mailman.log"
+  }
+
   config.plugins.plugins = [Cinch::Echo,
                             Cinch::HttpServer,
                             Cinch::GithubCommits,
@@ -107,6 +112,7 @@ cinch = Cinch::Bot.new do
                             Cinch::Tickets,
                             Cinch::Quit,
                             Cinch::Shakespeare,
+                            Cinch::MailmanObserver,
                             Cinch::Vote,
                             Cinch::Seen,
                             Cinch::ChannelRecord]
