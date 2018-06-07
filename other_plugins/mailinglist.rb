@@ -48,13 +48,13 @@ class Cinch::MailmanObserver
     # If the log has been rotated, switch to the new log file.
     # Do not seek to its end, because that would skip log entries
     # that have happened before the switch was detected.
-    # "<=" is used to catch empty logfiles being rotated with the new
-    # logfile being empty as well (both logfiles have zero size). In that
-    # case, simply assume the log has been rotated.
-    if File.size(config[:logfile]) <= @logsize
+    # If the file on disk as zero size, always assume it has been
+    # rotated.
+    current_size = File.size(config[:logfile])
+    if current_size < @logsize || current_size == 0
       @mailman_log.close
       @mailman_log = File.open(config[:logfile])
-      @logsize = File.size(config[:logfile])
+      @logsize = current_size
     end
 
     # Note: There can be the unlikely case that after logrotation and before this
