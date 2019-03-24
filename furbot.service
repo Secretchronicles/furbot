@@ -7,10 +7,10 @@ Type=simple
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=furbot
-WorkingDirectory=/home/smc/furbot
+WorkingDirectory=/home/furbot/furbot
 Environment="RACK_ENV=production" "LANG=en_US.UTF-8"
-User=smc
-Group=smc
+User=furbot
+Group=furbot
 ExecStart=/usr/local/bin/bundle exec ruby furbot.rb
 #Restart=on-failure
 
