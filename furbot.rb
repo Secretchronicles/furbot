@@ -78,15 +78,15 @@ cinch = Cinch::Bot.new do
     :max_age => 60 * 60 * 24 * 365 # 1 year
   }
 
-   config.plugins.options[Cinch::LogPlus] = {
-     :logdir  => "/var/www/chatlogs",
-     :timelogformat => "%H:%M"
+  config.plugins.options[Cinch::LogPlus] = {
+    :logdir  => "/var/www/chatlogs",
+    :timelogformat => "%H:%M"
   }
 
-   config.plugins.options[Cinch::Vote] = {
-     :auth_required => true,
-     :voters => %w[brianvanderburg2 Bugsbane DarkAceZ datahead8888 Luiji Quintus_q sauer2 sydneyjd xet7]
-   }
+  config.plugins.options[Cinch::Vote] = {
+    :auth_required => true,
+    :voters => %w[brianvanderburg2 Bugsbane DarkAceZ datahead8888 Luiji Quintus_q sauer2 sydneyjd xet7]
+  }
 
   config.plugins.options[Cinch::Tickets] = {
     :url => "https://github.com/Secretchronicles/TSC/issues/%d"
