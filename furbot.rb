@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- mode: ruby; coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 require "cinch"
 require "optparse"
