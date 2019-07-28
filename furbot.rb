@@ -107,7 +107,7 @@ cinch = Cinch::Bot.new do
   }
 
   config.plugins.options[Cinch::MailmanObserver] = {
-    :logfile => "/home/mailman/var/logs/mailman.log"
+    :logfile => "/var/log/mailman3/mailman.log"
   }
 
   config.plugins.plugins = [Cinch::Echo,
