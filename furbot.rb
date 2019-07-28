@@ -9,6 +9,7 @@ require "pathname"
 require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
 require_relative "cinch-plugins/plugins/logplus"
+require_relative "cinch-plugins/plugins/history"
 require_relative "cinch-plugins/plugins/echo"
 require_relative "cinch-plugins/plugins/link_info"
 require_relative "cinch-plugins/plugins/vote"
@@ -83,6 +84,11 @@ cinch = Cinch::Bot.new do
     :timelogformat => "%H:%M"
   }
 
+  config.plugins.options[Cinch::History] = {
+    :mode => :max_age,
+    :max_age => 60 * 24 # 1 day in minutes
+  }
+
   config.plugins.options[Cinch::Vote] = {
     :auth_required => true,
     :voters => %w[brianvanderburg2 Bugsbane DarkAceZ datahead8888 Luiji Quintus_q sauer2 sydneyjd xet7]
@@ -108,6 +114,7 @@ cinch = Cinch::Bot.new do
                             Cinch::HttpServer,
                             Cinch::GithubCommits,
                             Cinch::LogPlus,
+                            Cinch::History,
                             Cinch::LinkInfo,
                             Cinch::Tickets,
                             Cinch::Quit,
