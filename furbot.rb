@@ -8,7 +8,6 @@ require "time"
 require "pathname"
 require_relative "cinch-plugins/plugins/http_server"
 require_relative "cinch-plugins/plugins/github_commits"
-require_relative "cinch-plugins/plugins/logplus"
 require_relative "cinch-plugins/plugins/history"
 require_relative "cinch-plugins/plugins/echo"
 require_relative "cinch-plugins/plugins/link_info"
@@ -79,19 +78,15 @@ cinch = Cinch::Bot.new do
     :max_age => 60 * 60 * 24 * 365 # 1 year
   }
 
-  config.plugins.options[Cinch::LogPlus] = {
-    :logdir  => "/var/www/chatlogs",
-    :timelogformat => "%H:%M"
-  }
-
   config.plugins.options[Cinch::History] = {
     :mode => :max_age,
-    :max_age => 60 * 24 # 1 day in minutes
+    :only_talk => true,
+    :max_age => 15 # minutes
   }
 
   config.plugins.options[Cinch::Vote] = {
     :auth_required => true,
-    :voters => %w[brianvanderburg2 Bugsbane DarkAceZ datahead8888 Luiji Quintus_q sauer2 sydneyjd xet7]
+    :voters => %w[Bugsbane DarkAceZ datahead8888 Luiji quintus sydneyjd xet7]
   }
 
   config.plugins.options[Cinch::Tickets] = {
@@ -113,7 +108,6 @@ cinch = Cinch::Bot.new do
   config.plugins.plugins = [Cinch::Echo,
                             Cinch::HttpServer,
                             Cinch::GithubCommits,
-                            Cinch::LogPlus,
                             Cinch::History,
                             Cinch::LinkInfo,
                             Cinch::Tickets,
