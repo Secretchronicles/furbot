@@ -216,11 +216,8 @@ File.umask 0133 # rw-r--r--
 # Fail if target directories do not exist or is
 # otherwise not accessible
 p1 = Pathname.new(cinch.config.plugins.options[Cinch::Seen][:file]).dirname
-p2 = Pathname.new(cinch.config.plugins.options[Cinch::LogPlus][:logdir])
 fail "Not a directory: #{p1}" unless p1.directory?
-fail "Not a directory: #{p2}" unless p2.directory?
 fail "Directory not writable: #{p1}" unless p1.writable?
-fail "Directory not writable: #{p2}" unless p2.writable?
 
 Thread.abort_on_exception = true
 Dir.chdir("/")
