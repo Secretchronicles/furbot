@@ -6,47 +6,42 @@ require "nokogiri"
 class Cinch::MailmanObserver
   include Cinch::Plugin
 
-  listen_to :connect, :method => :on_connect
   timer 60, :method => :check_log
 
-  def on_connect(*)
-    raise(ArgumentError, "No :logfile configured") unless config[:logfile]
-
-    # Do nothing on a subsequent re-connect
-    return if @logfile
-    @logfile = config[:logfile]
-    @currpos = 0
-  end
-
   def check_log
-    return unless @logfile # in case it runs before connect succeeds
+    @currpos ||= nil
+    File.open(config[:logfile], "r") do |file|
+      if @currpos
+        # If the end position is smaller than the last position,
+        # the file has been rotated.
+        # This trick fails if immediately after log rotation much
+        # is written to the file and immediately before it it
+        # had only little content. In that case, reading starts
+        # in the middle of the rotated file, skipping the part
+        # before @currpos. Should be rare enough to ignore it.
+        file.seek(0, IO::SEEK_END)
+        @currpos = 0 if file.pos < @currpos
+        file.seek(@currpos, IO::SEEK_SET)
 
-    File.open(@logfile, "r") do |file|
-      # If the end position is smaller than the last position,
-      # the file has been rotated.
-      # This trick fails if immediately after log rotation much
-      # is written to the file and immediately before it it
-      # had only little content. In that case, reading starts
-      # in the middle of the rotated file, skipping the part
-      # before @currpos. Should be rare enough to ignore it.
-      file.seek(0, IO::SEEK_END)
-      @currpos = 0 if file.pos < @currpos
-      file.seek(@currpos, IO::SEEK_SET)
+        while line = file.gets
+          if line =~ /HyperKitty archived message <(.*?)> to (https?:\/\/.*)$/
+            url = $2
 
-      while line = file.gets
-        if line =~ /HyperKitty archived message <(.*?)> to (https?:\/\/.*)$/
-          url = $2
+            bot.channels.each{|c| c.send("New mailinglist message: #{url}")}
 
-          bot.channels.each{|c| c.send("New mailinglist message: #{url}")}
-
-          html = Nokogiri::HTML(open(url))
-          if node = html.at_xpath("html/head/title")
-            bot.channels.each{|c| c.send("Subject: #{node.text.strip}")}
+            html = Nokogiri::HTML(open(url))
+            if node = html.at_xpath("html/head/title")
+              bot.channels.each{|c| c.send("Subject: #{node.text.strip}")}
+            end
           end
         end
-      end
 
-      @currpos = file.pos
+        @currpos = file.pos
+      else
+        # First time check -- do not print out everything that's in the file already.
+        file.seek(0, IO::SEEK_END)
+        @currpos = file.pos
+      end
     end
   end
 
