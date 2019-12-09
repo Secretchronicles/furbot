@@ -6,8 +6,7 @@ require "optparse"
 require "syslog"
 require "time"
 require "pathname"
-require_relative "cinch-plugins/plugins/http_server"
-require_relative "cinch-plugins/plugins/github_commits"
+require_relative "cinch-plugins/plugins/git_commits"
 require_relative "cinch-plugins/plugins/history"
 require_relative "cinch-plugins/plugins/echo"
 require_relative "cinch-plugins/plugins/link_info"
@@ -68,11 +67,6 @@ cinch = Cinch::Bot.new do
 
   config.plugins.prefix = "!"
 
-  config.plugins.options[Cinch::HttpServer] = {
-    :host => "0.0.0.0",
-    :port => 46664
-  }
-
   config.plugins.options[Cinch::Seen] = {
     :file => "/var/lib/furbot/seenlog.dat",
     :max_age => 60 * 60 * 24 * 365 # 1 year
@@ -93,6 +87,10 @@ cinch = Cinch::Bot.new do
     :url => "https://github.com/Secretchronicles/TSC/issues/%d"
   }
 
+  config.plugins.options[Cinch::GitCommits] = {
+    :directory => "/srv/git"
+  }
+
   config.plugins.options[Cinch::Quit] = {
     :op => true
   }
@@ -106,8 +104,7 @@ cinch = Cinch::Bot.new do
   }
 
   config.plugins.plugins = [Cinch::Echo,
-                            Cinch::HttpServer,
-                            Cinch::GithubCommits,
+                            Cinch::GitCommits,
                             Cinch::History,
                             Cinch::LinkInfo,
                             Cinch::Tickets,
