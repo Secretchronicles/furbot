@@ -1,5 +1,9 @@
 This is code for the IRC bot that hangs around in #secretchronicles on
-chat.freenode.net. It uses Cinch (https://github.com/cinchrb/cinch).
+chat.freenode.net. It uses Cinch (<https://github.com/cinchrb/cinch>).
+
+If you are interested only in how to interact with furbot in
+#secretchronicles, please refer to this wiki page:
+<https://wiki.secretchronicles.org/Furbot>
 
 First, install all of its dependencies by running the following
 commands in the project directory:
