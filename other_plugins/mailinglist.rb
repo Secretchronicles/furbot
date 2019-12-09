@@ -33,7 +33,7 @@ class Cinch::MailmanObserver
       @currpos = 0 if file.pos < @currpos
       file.seek(@currpos, IO::SEEK_SET)
 
-      while line = @logfile.gets
+      while line = file.gets
         if line =~ /HyperKitty archived message <(.*?)> to (https?:\/\/.*)$/
           url = $2
 
