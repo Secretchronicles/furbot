@@ -43,7 +43,7 @@ op.parse!
 
 cinch = Cinch::Bot.new do
   configure do
-    config.server     = "chat.freenode.net"
+    config.server     = "irc.libera.chat"
     config.port       = 6697
     config.ssl.use    = true
     config.ssl.verify = false
