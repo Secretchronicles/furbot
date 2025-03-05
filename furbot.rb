@@ -139,6 +139,58 @@ cinch = Cinch::Bot.new do
     msg.channel.send("https://duckduckgo.com/?q=#{CGI.escape(term)}")
   end
 
+  on :message, /!log (\A[a-z|A-Z|\d|.|_|-|#|,]{1,20}\z)$/ do |msg, logsearchtext1|
+    # Showing first newest irclog search result
+    logresultcounter1 = 0
+    logfilelist1 = Dir['/logs/plainlogs/*.log'].sort.reverse
+    logfilelist1.each do |logfilename1|
+       File.readlines(logfilename1).reverse_each do |filelogline1|
+          completelogline1 = "#{logfilename1[-14..-5]} #{filelogline1}"
+          if (completelogline1[logsearchtext1])
+             logresultcounter1 = logresultcounter1 + 1
+             msg.channel.send("#{completelogline1}")
+             exit
+          end
+       end
+    end
+    if logresultcounter1 == 0 then
+       msg.channel.send("Not found.")
+    end
+    # Cleanup
+    logresultcounter1 = nil
+    logfilelist1 = nil
+    completelogline1 = nil
+    filelogline1 = nil
+  end
+
+  on :message, /!lognum (\A[a-z|A-Z|\d|.|_|-|#|,]{1,20}\z) (\A[1-9]{4}\z)$/ do |msg, logsearchtext2, logresultnumber2|
+    # Showing number x of irclog search result, starting counting from newest first as 1
+    logresultcounter2 = 0
+    logresultnumber2i = logresultnumber2.to_i
+    logfilelist2 = Dir['/logs/plainlogs/*.log'].sort.reverse
+    logfilelist2.each do |logfilename2|
+       File.readlines(logfilename2).reverse_each do |filelogline2|
+          completelogline2 = "#{logfilename2[-14..-5]} #{filelogline2}"
+          if (completelogline2[logsearchtext2])
+             logresultcounter2 = logresultcounter2 + 1
+             if (logresultcounter2 == logresultnumber2i)
+                msg.channel.send("#{completelogline2}")
+                exit
+             end
+          end
+       end
+    end
+    if logresultcounter2 == 0 then
+       msg.channel.send("Not found.")
+    end
+    # Cleanup
+    logresultcounter2 = nil
+    logresultnumber2i = nil
+    logfilelist2 = nil
+    completelogline2 = nil
+    filelogline2 = nil
+  end
+
   on :message, /!tzconv (.*?) (\w+) to (\w+)$/ do |msg, sourcetimestr, source, target|
     # Time.zone_offset only has a few selected zones.
     # Let’s add some more.
